@@ -6,45 +6,31 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.util.Random;
 
 /**
- *
- *
- *
- * @author shouko
+ * 贪吃蛇游戏的主界面
+ * 包括有对于按键逻辑的处理
+ * @author Shouko
  */
 
 public class SnakePanel extends JPanel implements KeyListener, ActionListener {
 
-    //载入图片
+    //载入标题图片
     ImageIcon title = new ImageIcon("src/com/shouko/snake/images/title.png");
-    ImageIcon body = new ImageIcon("src/com/shouko/snake/images/body.png");
-    ImageIcon up = new ImageIcon("src/com/shouko/snake/images/up.png");
-    ImageIcon down = new ImageIcon("src/com/shouko/snake/images/down.png");
-    ImageIcon left = new ImageIcon("src/com/shouko/snake/images/left.png");
-    ImageIcon right = new ImageIcon("src/com/shouko/snake/images/right.png");
-    ImageIcon food = new ImageIcon("src/com/shouko/snake/images/food.png");
 
+    //生成食物
+    Food food = new Food();
+    Snake snake = new Snake();
 
-    Random random = new Random();
-
-    char n = 10;
-
-    //蛇的数据结构，位置和方向
-    private int snakeLength;
-    private int[] snakeX = new int[816];
-    private int[] snakeY = new int[816];
-    private char dir = 'R'; // L, R, U, D
-    private int foodX = 25 + random.nextInt(34)*25;
-    private int foodY = 75 + random.nextInt(24)*25;;
-    private boolean life = true;
+    //得分和游戏速度
     private int score = 0;
     private int gameSpeed = 250;
 
-    //游戏是否开始
-    boolean isStarted = false;
+    //游戏是否正在运行
+    boolean gameStarted = false;
 
+
+    //
     Timer timer = new Timer(gameSpeed,this);
 
 
@@ -52,128 +38,94 @@ public class SnakePanel extends JPanel implements KeyListener, ActionListener {
      * 构造函数，初始化蛇，添加按键监听器，timer开始
      */
     public SnakePanel() {
-        initSnake();
+        snake.initialize();
         this.setFocusable(true);
         this.addKeyListener(this);
         timer.start();
     }
 
+
+    /**
+     * 绘制出游戏界面、蛇、食物
+     * @param g
+     */
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 
         //设置背景颜色和标题栏
         this.setBackground(Color.WHITE);
+
         title.paintIcon(this,g,25,10);
 
         //游戏区域
         g.fillRect(25,75,850,600);
 
+        //画出食物
+        food.draw(this, g);
+        snake.draw(this, g);
 
-        //控制蛇头方向
-        switch (dir){
-            case 'L':
-                left.paintIcon(this, g, snakeX[0], snakeY[0]);
-                break;
-            case 'R':
-                right.paintIcon(this, g, snakeX[0], snakeY[0]);
-                break;
-            case 'U':
-                up.paintIcon(this, g, snakeX[0], snakeY[0]);
-                break;
-            case 'D':
-                down.paintIcon(this, g, snakeX[0], snakeY[0]);
-                break;
-        }
 
-        //输出蛇的身体
-        for(int i = 1; i < snakeLength; i++){
-            body.paintIcon(this, g, snakeX[i], snakeY[i]);
-        }
-
-        food.paintIcon(this, g, foodX, foodY);
+        //在右上角显示得分
         g.setColor(Color.BLACK);
         g.setFont(new Font("微软雅黑",0,20));
         g.drawString("当前得分："+ score,750,40);
 
         //开始游戏提示
-        if(!isStarted){
+        if(!gameStarted){
             g.setColor(Color.WHITE);
             g.setFont(new Font("微软雅黑",0,60));
             g.drawString("按空格键开始游戏",225,350);
         }
 
-        if(!life){
+        //显示死亡提示
+        if(!snake.life){
             g.setColor(Color.RED);
             g.setFont(new Font("微软雅黑",0,80));
             g.drawString("你蛇死了！",225,200);
-            isStarted = false;
+            gameStarted = false;
+            score = 0;
         }
 
     }
 
-    /**
-     * 初始化蛇的位置
-     */
-    public void initSnake(){
 
-        snakeLength = 3;
-        snakeX[0] = 100;
-        snakeY[0] = 100;
-        snakeX[1] = 75;
-        snakeY[1] = 100;
-        snakeX[2] = 50;
-        snakeY[2] = 100;
-    }
 
     @Override
     public void keyTyped(KeyEvent e) {
 
     }
 
-    /**
-     * 刷新食物
-     */
-    public void changeFoodLocation(){
-
-        int x = random.nextInt(34);
-        int y = random.nextInt(24);
-        foodX = 25 + x * 25;
-        foodY = 75 + y * 25;
-    }
 
 
     /**
      * 监听哪一个按键被按下
-     *
      */
     @Override
     public void keyPressed(KeyEvent e) {
-
-
         int keyCode = e.getKeyCode();
         if(keyCode == KeyEvent.VK_SPACE){
-            isStarted = !isStarted;
-            if(life == false){
-                life = true;
-                initSnake();
-                dir = 'R';
+            gameStarted = !gameStarted;
+            if(snake.life == false){
+                snake.life = true;
+                snake.initialize();
+                snake.dir = 'R';
             }
             repaint();
         }
-        if(isStarted){
+        if(gameStarted){
             switch (e.getKeyCode()){
                 case KeyEvent.VK_UP:
-                    dir = 'U';
+                    snake.dir = 'U';
                     break;
                 case KeyEvent.VK_DOWN:
-                    dir = 'D';
+                    snake.dir = 'D';
                     break;
                 case KeyEvent.VK_LEFT:
-                    dir = 'L';
+                    snake.dir = 'L';
                     break;
                 case KeyEvent.VK_RIGHT:
-                    dir = 'R';
+                    snake.dir = 'R';
                     break;
 
             }
@@ -185,72 +137,22 @@ public class SnakePanel extends JPanel implements KeyListener, ActionListener {
 
     }
 
-
-    /**
-     * 蛇的移动
-     */
-    public void snakeMove(){
-        for(int i =snakeLength-1; i >=1; i--){
-            snakeX[i] = snakeX[i-1];
-            snakeY[i] = snakeY[i-1];
-        }
-        switch (dir){
-            case 'U':
-                snakeY[0] -= 25;
-                break;
-            case 'D':
-                snakeY[0] += 25;
-                break;
-            case 'L':
-                snakeX[0] -= 25;
-                break;
-            case 'R':
-                snakeX[0] += 25;
-                break;
-        }
-    }
-
-
-    /**
-     * 判断蛇是否活着
-     * @return True-活，False-死
-     */
-    public boolean isAlive(){
-        //撞自己身子而死
-        for(int i = 1; i < snakeLength; i++){
-            if(snakeX[0] == snakeX[i] && snakeY[0] == snakeY[i]){
-                return false;
-            }
-        }
-
-        //撞墙而死
-        if(snakeX[0] < 25 || snakeX[0] > 875 ){
-            return false;
-        }
-        if(snakeY[0] < 75 || snakeY[0] > 675 ){
-            return false;
-        }
-
-        return true;
-    }
-
-
-
     @Override
     public void actionPerformed(ActionEvent e) {
 
-        if(isStarted){
-            if(snakeX[0]==foodX && snakeY[0] == foodY){
-                changeFoodLocation();
+        if(gameStarted){
+            if(snake.snakeX[0]==food.getX() && snake.snakeY[0] == food.getY()){
+                food.changeLocation();
                 repaint();
-                snakeLength++;
+                snake.length++;
                 score++;
             }
             accelerate();
-            life = isAlive();
-            if(life){
-                snakeMove();
+            snake.checkAlive();
+            if(snake.life){
+                snake.move();
             }
+
         }
         repaint();
         timer.start();

@@ -1,6 +1,11 @@
 package com.shouko.snake;
 import javax.swing.*;
 
+/**
+ *
+ *
+ * @author Shouko
+ */
 public class SnakeGame {
     public static void main(String[] args) {
         JFrame frame = new JFrame();
@@ -10,8 +15,5 @@ public class SnakeGame {
         frame.setTitle("贪吃蛇");
         frame.add(new SnakePanel());
         frame.setVisible(true);
-
-
-
     }
 }
