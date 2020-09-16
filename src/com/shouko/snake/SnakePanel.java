@@ -8,6 +8,13 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.Random;
 
+/**
+ *
+ *
+ *
+ * @author shouko
+ */
+
 public class SnakePanel extends JPanel implements KeyListener, ActionListener {
 
     //载入图片
@@ -21,6 +28,8 @@ public class SnakePanel extends JPanel implements KeyListener, ActionListener {
 
 
     Random random = new Random();
+
+    char n = 10;
 
     //蛇的数据结构，位置和方向
     private int snakeLength;
@@ -39,8 +48,9 @@ public class SnakePanel extends JPanel implements KeyListener, ActionListener {
     Timer timer = new Timer(gameSpeed,this);
 
 
-
-
+    /**
+     * 构造函数，初始化蛇，添加按键监听器，timer开始
+     */
     public SnakePanel() {
         initSnake();
         this.setFocusable(true);
@@ -96,16 +106,17 @@ public class SnakePanel extends JPanel implements KeyListener, ActionListener {
         if(!life){
             g.setColor(Color.RED);
             g.setFont(new Font("微软雅黑",0,80));
-            g.drawString("你死了！",225,200);
+            g.drawString("你蛇死了！",225,200);
             isStarted = false;
         }
 
     }
 
+    /**
+     * 初始化蛇的位置
+     */
     public void initSnake(){
-        /**
-         * 初始化蛇的位置
-         */
+
         snakeLength = 3;
         snakeX[0] = 100;
         snakeY[0] = 100;
@@ -175,6 +186,9 @@ public class SnakePanel extends JPanel implements KeyListener, ActionListener {
     }
 
 
+    /**
+     * 蛇的移动
+     */
     public void snakeMove(){
         for(int i =snakeLength-1; i >=1; i--){
             snakeX[i] = snakeX[i-1];
@@ -196,12 +210,20 @@ public class SnakePanel extends JPanel implements KeyListener, ActionListener {
         }
     }
 
+
+    /**
+     * 判断蛇是否活着
+     * @return True-活，False-死
+     */
     public boolean isAlive(){
+        //撞自己身子而死
         for(int i = 1; i < snakeLength; i++){
             if(snakeX[0] == snakeX[i] && snakeY[0] == snakeY[i]){
                 return false;
             }
         }
+
+        //撞墙而死
         if(snakeX[0] < 25 || snakeX[0] > 875 ){
             return false;
         }
@@ -225,8 +247,10 @@ public class SnakePanel extends JPanel implements KeyListener, ActionListener {
                 score++;
             }
             accelerate();
-            snakeMove();
             life = isAlive();
+            if(life){
+                snakeMove();
+            }
         }
         repaint();
         timer.start();
