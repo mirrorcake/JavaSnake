@@ -16,7 +16,7 @@ import java.awt.event.KeyListener;
 public class SnakePanel extends JPanel implements KeyListener, ActionListener {
 
     //载入标题图片
-    ImageIcon title = new ImageIcon("src/com/shouko/snake/images/title.png");
+    ImageIcon title = new ImageIcon(this.getClass().getResource("images/title.png"));
 
     //生成食物
     Food food = new Food();
@@ -109,31 +109,68 @@ public class SnakePanel extends JPanel implements KeyListener, ActionListener {
             if(snake.life == false){
                 snake.life = true;
                 snake.initialize();
-                snake.dir = 'R';
+                snake.direction = 'R';
             }
             repaint();
         }
         if(gameStarted){
             switch (e.getKeyCode()){
                 case KeyEvent.VK_UP:
-                    snake.dir = 'U';
+                    if(snake.direction == 'U'){
+                        timer.setDelay(75);
+                    }
+                    if(snake.direction == 'D'){
+                        snake.direction = 'D';
+                    }else{
+                        snake.direction = 'U';
+                    }
                     break;
                 case KeyEvent.VK_DOWN:
-                    snake.dir = 'D';
+                    if(snake.direction == 'D'){
+                        timer.setDelay(75);
+                    }
+                    if(snake.direction == 'U'){
+                        snake.direction = 'U';
+                    }else{
+                        snake.direction = 'D';
+                    }
                     break;
                 case KeyEvent.VK_LEFT:
-                    snake.dir = 'L';
+                    if(snake.direction == 'L'){
+                        timer.setDelay(75);
+                    }
+                    if(snake.direction == 'R'){
+                        snake.direction = 'R';
+                    }else{
+                        snake.direction = 'L';
+                    }
                     break;
                 case KeyEvent.VK_RIGHT:
-                    snake.dir = 'R';
+                    if(snake.direction == 'R'){
+                        timer.setDelay(75);
+                    }
+                    if(snake.direction == 'L'){
+                        snake.direction = 'L';
+                    }else{
+                        snake.direction = 'R';
+                    }
                     break;
-
             }
         }
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
+        if(gameStarted){
+            switch (e.getKeyCode()){
+                case KeyEvent.VK_UP:
+                case KeyEvent.VK_DOWN:
+                case KeyEvent.VK_LEFT:
+                case KeyEvent.VK_RIGHT:
+                    timer.setDelay(gameSpeed);
+                    break;
+            }
+        }
 
     }
 
@@ -165,20 +202,21 @@ public class SnakePanel extends JPanel implements KeyListener, ActionListener {
     public void accelerate(){
 
         if(score>5){
-            timer.setDelay(200);
+            gameSpeed = 200;
         }
         if(score>7){
-            timer.setDelay(175);
+            gameSpeed = 175;
         }
         if(score>10){
-            timer.setDelay(150);
+            gameSpeed = 150;
         }
         if(score>13){
-            timer.setDelay(125);
+            gameSpeed = 125;
         }
         if(score>13){
-            timer.setDelay(100);
+            gameSpeed = 100;
         }
+        timer.setDelay(gameSpeed);
     }
 
 }

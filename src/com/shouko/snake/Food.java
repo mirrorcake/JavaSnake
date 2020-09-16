@@ -28,7 +28,7 @@ public class Food {
     }
 
     //载入食物图片
-    ImageIcon food = new ImageIcon("src/com/shouko/snake/images/food.png");
+    ImageIcon food = new ImageIcon(this.getClass().getResource("images/food.png"));
 
     /**
      * 画出食物

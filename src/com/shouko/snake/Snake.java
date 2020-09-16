@@ -9,17 +9,17 @@ import java.awt.*;
  */
 public class Snake {
     //载入蛇的身子和头的图片
-    ImageIcon body = new ImageIcon("src/com/shouko/snake/images/body.png");
-    ImageIcon up = new ImageIcon("src/com/shouko/snake/images/up.png");
-    ImageIcon down = new ImageIcon("src/com/shouko/snake/images/down.png");
-    ImageIcon left = new ImageIcon("src/com/shouko/snake/images/left.png");
-    ImageIcon right = new ImageIcon("src/com/shouko/snake/images/right.png");
+    ImageIcon body = new ImageIcon(this.getClass().getResource("images/body.png"));
+    ImageIcon up = new ImageIcon(this.getClass().getResource("images/up.png"));
+    ImageIcon down = new ImageIcon(this.getClass().getResource("images/down.png"));
+    ImageIcon left = new ImageIcon(this.getClass().getResource("images/left.png"));
+    ImageIcon right = new ImageIcon(this.getClass().getResource("images/right.png"));
 
     //蛇的参数，x和y为蛇的对应长度的坐标
     public int length;
     public int[] snakeX = new int[816];
     public int[] snakeY = new int[816];
-    public char dir = 'R'; // L, R, U, D
+    public char direction = 'R'; // L, R, U, D
     public boolean life = true;
 
     /**
@@ -54,7 +54,7 @@ public class Snake {
             snakeX[i] = snakeX[i-1];
             snakeY[i] = snakeY[i-1];
         }
-        switch (dir){
+        switch (direction){
             case 'U':
                 snakeY[0] -= 25;
                 break;
@@ -86,8 +86,6 @@ public class Snake {
         }
         if(snakeY[0] < 75 || snakeY[0] > 675 ){
             life = false;
-        }else{
-            life = true;
         }
     }
 
@@ -108,7 +106,7 @@ public class Snake {
      * @param g
      */
     private void drawHead(Component c, Graphics g){
-        switch (dir){
+        switch (direction){
             case 'L':
                 left.paintIcon(c, g, snakeX[0], snakeY[0]);
                 break;
